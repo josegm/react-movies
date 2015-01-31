@@ -66,28 +66,29 @@ var Movies = React.createClass({
 
     var self = this;
     this.state.movie_titles.map(function(m) {
-
       requests.push(function() {
         $.ajax({
           url: api + m,
           dataType: "jsonp",
-          success: function(result) {
-            var movies = self.state.movies;
-            var updatedMovies = []
-            for(var index in movies) {
-              if(movies[index].title === m && result.movies.length>0) {
-                updatedMovies.push({title: movies[index].title,
-                                   url: result.movies[0].links.alternate,
-                                   image_url: result.movies[0].posters.detailed})
-              } else {
-                updatedMovies.push(movies[index])
-              }
-            }
-            self.setState({movies: updatedMovies });
-          }
-        })
+          success: function(result) { self.updateMovieWithInfo(m, result); }
+        });
       });
     });
+  },
+
+  updateMovieWithInfo: function(movie, info) {
+    var movies = this.state.movies;
+    var updatedMovies = []
+    for(var index in movies) {
+      if(movies[index].title === movie && info.movies.length>0) {
+        updatedMovies.push({title: movies[index].title,
+                           url: info.movies[0].links.alternate,
+                           image_url: info.movies[0].posters.detailed})
+      } else {
+        updatedMovies.push(movies[index])
+      }
+    }
+    this.setState({movies: updatedMovies });
   },
 
   render: function() {
